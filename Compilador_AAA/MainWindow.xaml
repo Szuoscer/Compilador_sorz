@@ -1,0 +1,115 @@
+﻿<Window x:Class="Compilador_AAA.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Compilador_AAA"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        Background="#3E2227"
+        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+        AllowsTransparency="True"
+        UseLayoutRounding="True"
+        ResizeMode="CanResizeWithGrip"
+        Title="MainView"
+        Height="620"
+        Width="1260"
+        RenderOptions.BitmapScalingMode="HighQuality"
+        WindowStartupLocation="CenterScreen" Icon="C:\Users\seleg\Downloads\Compilador_sorz\Compilador_AAA-master\Compilador_AAA\Resources\SVG\iconAppTraductor.png" Activated="Window_Activated" Deactivated="Window_Deactivated">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0"
+                      ResizeBorderThickness="5"
+                      GlassFrameThickness="0"
+                      CornerRadius="0" />
+    </WindowChrome.WindowChrome>
+    <Border Name="MainBorder" BorderBrush="{StaticResource BorderDarkGrayMainBG}" BorderThickness="0" >
+        <Grid Name="MainPanel"
+              Style="{StaticResource MainPanel}"
+              Background="#280B1A">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25" />
+                <RowDefinition Height="18" />
+                <RowDefinition />
+                <RowDefinition Height="15"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0"
+                  Name="WindowBar"
+                  MouseLeftButtonDown="WindowBar_MouseLeftButtonDown"
+                  MouseEnter="WindowBar_MouseEnter"
+                  Background="#FFD7EC">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="150" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" >
+                    <Image Source="\Resources\SVG\iconTraductor.png" Width="20" Margin="7,0" />  <!--no se muestra la imagen-->
+                    <Label Content="Traductor" FontSize="12" FontWeight="Bold" Opacity="0.4" Foreground="#F0589A" Margin="0,-3,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" 
+                            x:Name="ControlBar"
+                            Orientation="Horizontal"
+                            FlowDirection="RightToLeft">
+                    <!--Background="Transparent">-->
+                    <Button x:Name="btnClose"
+                            Style="{StaticResource controlButton}"
+                            Click="btnClose_Click"
+                            VerticalAlignment="Center">
+                        <Image Style="{StaticResource controlShutDownButtonIcon}"
+                               Source="\Resources\SVG\CerrarV.png" />              <!--no se muestra la imagen-->
+                    </Button>
+                    <Button x:Name="btnMaximize"
+                            Style="{StaticResource controlButton}"
+                            Click="btnMaximize_Click"
+                            VerticalAlignment="Center">
+                        <fa:IconImage Style="{StaticResource controlMinMaxButtonIcon}" />
+                    </Button>
+                    <Button x:Name="btnMinimize"
+                            Style="{StaticResource controlButton}"
+                            Click="btnMinimize_Click"
+                            VerticalAlignment="Center">
+                        <fa:IconImage Icon="WindowMinimize"
+                                      Style="{StaticResource controlButtonIcon}"
+                                      Width="11"
+                                      Height="1.5" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1" Margin="0,0,0,0"  Background="#FFD7EC">
+                <StackPanel Orientation="Horizontal"
+            VerticalAlignment="top"
+            Margin="10,0,0,0">
+                    <Menu Background="Transparent"
+          Foreground="DarkRed"
+          VerticalAlignment="Center"
+          FontSize="12"
+          FontWeight="Regular">
+                        <!--<MenuItem Header="Traductor"
+                  Style="{StaticResource MenuItemsDarkBG}"
+                  x:Name="TraductorMenu"
+                  PreviewMouseLeftButtonDown="TraductorMenu_PreviewMouseLeftButtonDown">
+                        </MenuItem>-->
+                        <MenuItem Header="Archivos"
+                  Style="{StaticResource MenuItemsDarkBG}">
+                            <MenuItem Header="Lenguaje original" />
+                            <MenuItem Header="Lenguaje traducido" />
+                        </MenuItem>
+
+                        <MenuItem Header="Ayuda"
+                  Style="{StaticResource MenuItemsDarkBG}">
+                            <MenuItem x:Name="Palabras_Reservadas"
+                      Header="Palabras reservadas"
+                      PreviewMouseLeftButtonDown="Palabras_Reservadas_PreviewMouseLeftButtonDown" />
+                            <MenuItem Header="Ejemplos de mi lenguaje" />
+                        </MenuItem>
+                        <MenuItem Header="Acerca de"
+                  Style="{StaticResource MenuItemsDarkBG}" />
+                    </Menu>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="2" Name="ContentPanel" Margin="10,0"/>
+            <Grid Grid.Row="3"
+                  Background="#FFB6DB"></Grid>
+        </Grid>
+    </Border>
+   
+</Window>
