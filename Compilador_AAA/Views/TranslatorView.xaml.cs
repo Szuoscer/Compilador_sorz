@@ -78,7 +78,7 @@ namespace Compilador_AAA.Views
             }
             
             BrushConverter bc = new BrushConverter();
-            translatedheadercolor.Background = (Brush)bc.ConvertFrom("#878b4f");
+            translatedheadercolor.Background = (Brush)bc.ConvertFrom("#FFD7EC");
 
         }
 
@@ -105,37 +105,37 @@ namespace Compilador_AAA.Views
         private void OriginalEditor_GotFocus(object sender, RoutedEventArgs e)
         {
             BrushConverter bc = new BrushConverter();
-            originalheadercolor.Background = (Brush)bc.ConvertFrom("#878b4f");
-            translatedheadercolor.Background = (Brush)bc.ConvertFrom("#313131");
-            errorlistheadercolor.Background = (Brush)bc.ConvertFrom("#313131");
+            originalheadercolor.Background = (Brush)bc.ConvertFrom("#FFD7EC");
+            translatedheadercolor.Background = (Brush)bc.ConvertFrom("#280B1A");
+            errorlistheadercolor.Background = (Brush)bc.ConvertFrom("#280B1A");
         }
 
         private void OriginalEditor_LostFocus(object sender, RoutedEventArgs e)
         {
             BrushConverter bc = new BrushConverter();
-            originalheadercolor.Background = (Brush)bc.ConvertFrom("#313131");
+            originalheadercolor.Background = (Brush)bc.ConvertFrom("#280B1A");
         }
 
         private void TranslatedEditor_GotFocus(object sender, RoutedEventArgs e)
         {
             BrushConverter bc = new BrushConverter();
-            translatedheadercolor.Background = (Brush)bc.ConvertFrom("#878b4f");
-            originalheadercolor.Background = (Brush)bc.ConvertFrom("#313131");
-            errorlistheadercolor.Background = (Brush)bc.ConvertFrom("#313131");
+            translatedheadercolor.Background = (Brush)bc.ConvertFrom("#FFD7EC");
+            originalheadercolor.Background = (Brush)bc.ConvertFrom("#280B1A");
+            errorlistheadercolor.Background = (Brush)bc.ConvertFrom("#280B1A");
         }
 
         private void TranslatedEditor_LostFocus(object sender, RoutedEventArgs e)
         {
             BrushConverter bc = new BrushConverter();
-            translatedheadercolor.Background = (Brush)bc.ConvertFrom("#313131");
+            translatedheadercolor.Background = (Brush)bc.ConvertFrom("#280B1A");
         }
 
         private void ErrorsWindow_GotFocus(object sender, RoutedEventArgs e)
         {
             BrushConverter bc = new BrushConverter();
-            errorlistheadercolor.Background = (Brush)bc.ConvertFrom("#878b4f");
-            originalheadercolor.Background = (Brush)bc.ConvertFrom("#313131");
-            translatedheadercolor.Background = (Brush)bc.ConvertFrom("#313131");
+            errorlistheadercolor.Background = (Brush)bc.ConvertFrom("#FFD7EC");
+            originalheadercolor.Background = (Brush)bc.ConvertFrom("#280B1A");
+            translatedheadercolor.Background = (Brush)bc.ConvertFrom("#280B1A");
         }
 
         private void ErrorsWindow_LostFocus(object sender, RoutedEventArgs e)
@@ -193,7 +193,7 @@ namespace Compilador_AAA.Views
                     }
                 }
                 BrushConverter bc = new BrushConverter();
-                translatedheadercolor.Background = (Brush)bc.ConvertFrom("#878b4f");
+                translatedheadercolor.Background = (Brush)bc.ConvertFrom("#460721");
             }
         }
         private bool RTErrorList = true;

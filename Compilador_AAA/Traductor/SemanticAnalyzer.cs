@@ -309,7 +309,7 @@ namespace Compilador_AAA.Traductor
                                 varGotDouble = true;
                             }
                         }
-                        else if (!_variables.ContainsKey(identifier.ID))
+                        if (!_variables.ContainsKey(identifier.ID))
                         {
                             TranslatorView.HandleError($"La variable '{identifier.ID}' no existe.", expression.StartLine, "SIN014");
                             return null;

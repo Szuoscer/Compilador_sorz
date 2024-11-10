@@ -15,7 +15,7 @@
         Height="620"
         Width="1260"
         RenderOptions.BitmapScalingMode="HighQuality"
-        WindowStartupLocation="CenterScreen" Icon="C:\Users\seleg\Downloads\Compilador_sorz\Compilador_AAA-master\Compilador_AAA\Resources\SVG\iconAppTraductor.png" Activated="Window_Activated" Deactivated="Window_Deactivated">
+        WindowStartupLocation="CenterScreen" Icon="\Resources\SVG\iconAppTraductor.png" Activated="Window_Activated" Deactivated="Window_Deactivated">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0"
                       ResizeBorderThickness="5"
