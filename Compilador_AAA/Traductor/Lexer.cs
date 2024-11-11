@@ -17,7 +17,7 @@ namespace Compilador_AAA.Traductor
         Public,
         Private,
         Protected,
-        Internal, 
+        Internal,
         Constant,
         Keyword,
         Identifier,
@@ -40,6 +40,7 @@ namespace Compilador_AAA.Traductor
         MultiLineComment,
         EOF,
         UnrecognizedCharacter,
+        BooleanLiteral,
     }
 
     public class Lexer
@@ -57,13 +58,13 @@ namespace Compilador_AAA.Traductor
         { TokenType.Private, @"\bprivate\b" },
         { TokenType.Protected, @"\bprotected\b" },
         { TokenType.Internal, @"\binternal\b" },
-        { TokenType.Keyword, @"\b(int|if|for|while|return|string|char|double|class|func|Println)\b" },
+        { TokenType.Keyword, @"\b(int|if|for|while|return|string|char|double|bool|class|func|Println)\b" },
         { TokenType.DoubleLiteral,  @"(?<!\w)(\.\d+|\d+\.\d+(\.\d+)*)(e[+-]?\d+)?(?!\w)" },
         { TokenType.IntegerLiteral, @"(?<!\w)\d+(?!\w)" },
-        
+        { TokenType.BooleanLiteral, @"\b(true|false)\b" },
         { TokenType.Identifier, @"\b[a-zA-Z0-9_]+\b" },
+        { TokenType.Operator, @"&&|\|\||==|[+\-*/%&|^!<>]=?" },
         { TokenType.Equals, @"=" },
-        { TokenType.Operator, @"==|[+\-*/%&|^!=<>]=?|&&|\|\|" },
         { TokenType.BinaryOperator, @"[+\-*/%&|^!=<>]" },
         { TokenType.OpenParen, @"\(" },
         { TokenType.CloseParen, @"\)" },
@@ -114,7 +115,7 @@ namespace Compilador_AAA.Traductor
                         // Verificar identificadores que comienzan con un número
                         if (token.Type == TokenType.Identifier && char.IsDigit(token.Value[0]))
                         {
-                            TranslatorView.HandleError($"Identificador no puede comenzar con un número en la posición {_position}: '{token.Value}'", token.EndLine,"LEX001");
+                            TranslatorView.HandleError($"Identificador no puede comenzar con un número en la posición {_position}: '{token.Value}'", token.EndLine, "LEX001");
                         }
 
                         // Verificar números mal formateados con múltiples puntos decimales

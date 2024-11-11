@@ -29,13 +29,14 @@ namespace Compilador_AAA.Traductor
         AssignmentExpr,
         MemberExpr,
         CallExpr,
-        BinaryExpr, 
+        BinaryExpr,
         ConditionExpr,
 
         // LITERALS
         Property,
         NumericLiteral,
         ObjectLiteral,
+        BooleanLiteral,
         StringLiteral,
         IntegerLiteral,
         DoubleLiteral,
@@ -127,7 +128,7 @@ namespace Compilador_AAA.Traductor
         public Identifier Identifier { get; set; }
         public AssignmentExpr Assignment { get; set; }
 
-        public VarDeclaration(string varType, int startLine, bool constant, Identifier identifier, AssignmentExpr assignment= null)
+        public VarDeclaration(string varType, int startLine, bool constant, Identifier identifier, AssignmentExpr assignment = null)
             : base(NodeType.VarDeclaration, startLine)
         {
             Constant = constant;
@@ -179,7 +180,7 @@ namespace Compilador_AAA.Traductor
         }
     }
 
-    
+
     // EXPRESSION BASE CLASS
     public abstract class Expr : Stmt
     {
@@ -202,7 +203,7 @@ namespace Compilador_AAA.Traductor
             visitor.Visit(this);
         }
     }
-    
+
 
     public class BinaryExpr : Expr
     {
@@ -324,6 +325,19 @@ namespace Compilador_AAA.Traductor
         public string Value { get; set; }
 
         public StringLiteral(string value, int startLine) : base(NodeType.StringLiteral, startLine)
+        {
+            Value = value;
+        }
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+    }
+    public class BooleanLiteral : Expr
+    {
+        public bool Value { get; set; }
+
+        public BooleanLiteral(bool value, int startLine) : base(NodeType.BooleanLiteral, startLine)
         {
             Value = value;
         }

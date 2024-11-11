@@ -11,7 +11,7 @@ using System.Windows.Media.Media3D;
 
 namespace Compilador_AAA.Traductor
 {
-    
+
     public class Parser
     {
         private Dictionary<int, List<Token>> _tokensByLine;
@@ -91,7 +91,7 @@ namespace Compilador_AAA.Traductor
             }
             Consume(TokenType.CloseParen, "Se esperaba ')' ", "SIN011");
             Consume(TokenType.Semicolon, "Se esperaba ';' al final.", "SIN007");
-            return new Println(currentLineTemp,expr);
+            return new Println(currentLineTemp, expr);
         }
 
         private Identifier ParseIdentifier()
@@ -106,14 +106,14 @@ namespace Compilador_AAA.Traductor
 
             Consume(TokenType.Semicolon, "Se esperaba ';' al final de la declaración de variable.", "SIN007");
             if (value != null)
-                return new Identifier(identifier,  Previous().StartLine, value);
+                return new Identifier(identifier, Previous().StartLine, value);
             return null;
         }
 
         private Expr ParseNumericLiteral()
         {
             string numericL = Previous().Value;
-            return new Identifier(numericL,_currentLine);
+            return new Identifier(numericL, _currentLine);
         }
 
         private ClassDeclaration ParseClassDeclaration()
@@ -132,7 +132,7 @@ namespace Compilador_AAA.Traductor
                             : Previous().Value;
             }
 
-           
+
             Consume(TokenType.OpenBrace, "Se esperaba '{' ", "SIN004");
 
             List<Stmt> children = new List<Stmt>();
@@ -147,34 +147,68 @@ namespace Compilador_AAA.Traductor
                 {
                     if (!IsAtEndOfLine()) _currentTokenIndex++;
                 }
-                
+
             }
 
             Consume(TokenType.CloseBrace, "Se esperaba '}' al final de la declaración de la clase", "SIN005");
-            return new ClassDeclaration(className, new List<string>(), children, accessModifier,currentLineTemp);
+            return new ClassDeclaration(className, new List<string>(), children, accessModifier, currentLineTemp);
         }
         private Expr ParseCondition()
         {
             Expr left = ParseAddExpr(); // Analiza la expresión a la izquierda
 
-            Token token = AdvancePeek(); // Obtiene el siguiente token
-            if (token.Type == TokenType.BinaryOperator && (token.Value == "==" || token.Value == "!=" || token.Value == ">" || token.Value == "<"))
+            while (true) // Permite múltiples condiciones de comparación
             {
-                Advance(); // Consume el operador
-                Expr right = ParseAddExpr(); // Analiza la expresión a la derecha
-                return new ConditionExpr(left, token.Value, right, _currentLine); // Crea una nueva condición
+                Token token = AdvancePeek(); // Obtiene el siguiente token
+                if (token.Type == TokenType.Operator && (token.Value == "==" || token.Value == "!=" || token.Value == ">" || token.Value == "<"))
+                {
+                    Advance(); // Consume el operador
+                    Expr right = ParseAddExpr(); // Analiza la expresión a la derecha
+                    left = new ConditionExpr(left, token.Value, right, _currentLine); // Crea una nueva condición
+                }
+                else
+                {
+                    break; // Sale del bucle si no hay más operadores de comparación
+                }
             }
 
             return left; // Si no hay operador, retorna la expresión izquierda
         }
-        
+        private Expr ParseLogicAND()
+        {
+            Expr left = ParseCondition(); // Analiza la expresión a la izquierda
+
+            Token token = AdvancePeek(); // Obtiene el siguiente token
+            if (token.Type == TokenType.Operator && (token.Value == "&&"))
+            {
+                Advance(); // Consume el operador
+                Expr right = ParseCondition(); // Analiza la expresión a la derecha
+                left = new ConditionExpr(left, token.Value, right, _currentLine); // Crea una nueva condición
+            }
+
+            return left; // Si no hay operador, retorna la expresión izquierda
+        }
+        private Expr ParseLogicOR()
+        {
+            Expr left = ParseLogicAND(); // Analiza la expresión a la izquierda
+
+            Token token = AdvancePeek(); // Obtiene el siguiente token
+            if (token.Type == TokenType.Operator && (token.Value == "||"))
+            {
+                Advance(); // Consume el operador
+                Expr right = ParseLogicAND(); // Analiza la expresión a la derecha
+                left = new ConditionExpr(left, token.Value, right, _currentLine); // Crea una nueva condición
+            }
+
+            return left; // Si no hay operador, retorna la expresión izquierda
+        }
 
         private IfStatement ParseIfStatement()
         {
             Consume(TokenType.Keyword, "Se esperaba 'if'", "SIN010");
             Consume(TokenType.OpenParen, "Se esperaba '(' después de 'if'", "SIN011");
 
-            Expr condition = (Expr)ParseCondition(); // Analiza la condición
+            Expr condition = (Expr)ParseLogicOR(); // Analiza la condición
 
             Consume(TokenType.CloseParen, "Se esperaba ')' después de la condición", "SIN012");
             Consume(TokenType.OpenBrace, "Se esperaba '{' después de la condición", "SIN013");
@@ -224,7 +258,7 @@ namespace Compilador_AAA.Traductor
             }
 
             Consume(TokenType.Semicolon, "Se esperaba ';' al final de la declaración de variable.", "SIN007");
-            if(tokenIdentifier != null)
+            if (tokenIdentifier != null)
                 return new VarDeclaration(tokenKeyword.Value, tokenKeyword.StartLine, isConstant, new Identifier(tokenIdentifier.Value, tokenIdentifier.StartLine), value);
             return null;
         }
@@ -232,10 +266,10 @@ namespace Compilador_AAA.Traductor
         private AssignmentExpr ParseAssignmentExpression(Identifier id)
         {
             Expr expresion = ParseAddExpr();
-            if(expresion != null )
+            if (expresion != null)
                 return new AssignmentExpr(id, expresion, _currentLine);
             return null;
-            
+
 
         }
         private Expr PrimaryExpr()
@@ -243,11 +277,16 @@ namespace Compilador_AAA.Traductor
             int currentLineTemp = _currentLine;
             int currentTokenIndexTemp = _currentTokenIndex;
             Token token = null;
-            if (Consume([TokenType.IntegerLiteral, TokenType.StringLiteral, TokenType.DoubleLiteral, TokenType.OpenParen,TokenType.Identifier], "Se esperaba una expresión ", "SIN008"))
+            if (Consume([TokenType.IntegerLiteral, TokenType.StringLiteral, TokenType.DoubleLiteral, TokenType.OpenParen, TokenType.Identifier, TokenType.BooleanLiteral], "Se esperaba una expresión ", "SIN008"))
             {
                 token = _currentLine > currentLineTemp
                             ? Previous(currentLineTemp, currentTokenIndexTemp)
                             : Previous();
+            }
+            else
+            {
+                _currentTokenIndex = currentTokenIndexTemp;
+                _currentLine = currentLineTemp;
             }
             if (token != null)
             {
@@ -256,17 +295,20 @@ namespace Compilador_AAA.Traductor
                     case TokenType.Identifier:
                         return new Identifier(token.Value, currentLineTemp);
                     case TokenType.IntegerLiteral:
-                        return new IntegerLiteral(Convert.ToInt32(token.Value),currentLineTemp);
+                        return new IntegerLiteral(Convert.ToInt32(token.Value), currentLineTemp);
                     case TokenType.DoubleLiteral:
                         return new DoubleLiteral(Convert.ToDouble(token.Value), currentLineTemp);
                     case TokenType.StringLiteral:
                         return new StringLiteral(token.Value, currentLineTemp);
+                    case TokenType.BooleanLiteral:
+                        return new BooleanLiteral(Convert.ToBoolean(token.Value), currentLineTemp);
                     case TokenType.OpenParen:
                         var value = ParseAddExpr();
                         Consume(TokenType.CloseParen, "se esperaba el cierre del parentesis", "sin007");
                         return value;
                 }
             }
+
             return null;
         }
         private Expr ParseAddExpr()
@@ -291,29 +333,6 @@ namespace Compilador_AAA.Traductor
             }
             return left;
         }
-        private Expr ParseBinaryOperator()
-        {
-            int currentLineTemp = _currentLine;
-            int currentTokenIndexTemp = _currentTokenIndex;
-            Expr left = ParseMultExpr();  // Comienza con una expresión de multiplicación
-
-            while (true)
-            {
-                Token token = AdvancePeek();
-                if (token.Type == TokenType.Operator && (token.Value == "+" || token.Value == "-"))
-                {
-                    Advance();  // Consume el operador
-                    Expr right = ParseMultExpr();  // Obtiene la siguiente expresión de multiplicación
-                    left = new BinaryExpr(left, right, token.Value, currentLineTemp);  // Crea una nueva expresión binaria
-                }
-                else
-                {
-                    break;  // Sale del bucle si no hay más operadores de suma o resta
-                }
-            }
-            return left;
-        }
-
         private Expr ParseMultExpr()
         {
             int currentLineTemp = _currentLine;
@@ -336,10 +355,34 @@ namespace Compilador_AAA.Traductor
             }
             return left;
         }
+        private Expr ParseOperator()
+        {
+            int currentLineTemp = _currentLine;
+            int currentTokenIndexTemp = _currentTokenIndex;
+            Expr left = ParseMultExpr();  // Comienza con una expresión de multiplicación
+
+            while (true)
+            {
+                Token token = AdvancePeek();
+                if (token.Type == TokenType.Operator && (token.Value == "+" || token.Value == "-"))
+                {
+                    Advance();  // Consume el operador
+                    Expr right = ParseMultExpr();  // Obtiene la siguiente expresión de multiplicación
+                    left = new BinaryExpr(left, right, token.Value, currentLineTemp);  // Crea una nueva expresión binaria
+                }
+                else
+                {
+                    break;  // Sale del bucle si no hay más operadores de suma o resta
+                }
+            }
+            return left;
+        }
+
+
         private StringLiteral ParseStringLiteral()
         {
             Token stringLiteral = Previous();
-            return new StringLiteral(stringLiteral.Value,stringLiteral.StartLine);
+            return new StringLiteral(stringLiteral.Value, stringLiteral.StartLine);
         }
         private IntegerLiteral ParseIntegerLiteral()
         {
@@ -349,7 +392,7 @@ namespace Compilador_AAA.Traductor
         private DoubleLiteral ParseDoubleLiteral()
         {
             Token doubleLiteral = Previous();
-            return new DoubleLiteral(Convert.ToDouble( doubleLiteral.Value), doubleLiteral.StartLine);
+            return new DoubleLiteral(Convert.ToDouble(doubleLiteral.Value), doubleLiteral.StartLine);
         }
         private Token Previous(int previousLine, int previousIndexToken)
         {
@@ -410,6 +453,7 @@ namespace Compilador_AAA.Traductor
             if (!IsAtEndOfLine()) _currentTokenIndex++;
             return Previous();
         }
+
         private Token Peek()
         {
             return _currentTokens[_currentTokenIndex];
@@ -444,9 +488,8 @@ namespace Compilador_AAA.Traductor
             }
             else if (!IsAtEndOfLine())
             {
-                errorMsg = "Error de sintaxis: " + errorMessage;
-                if(errorCode !="")
-                TranslatorView.HandleError(errorMsg + $" pero se encontró: {Peek().Value}", expectedType == TokenType.OpenBrace ? Peek().StartLine - 1 : Peek().StartLine, errorCode);
+                if (errorCode != "")
+                    TranslatorView.HandleError(errorMessage + $" '{Peek().Value}' no es válido", expectedType == TokenType.OpenBrace ? Peek().StartLine - 1 : Peek().StartLine, errorCode);
                 Advance();
                 return false;
             }
@@ -470,14 +513,13 @@ namespace Compilador_AAA.Traductor
             }
             else if (!IsAtEndOfLine())
             {
-                errorMsg = "Error de sintaxis: " + errorMessage;
                 if (errorCode != "")
-                    TranslatorView.HandleError(errorMsg + $" pero se encontró: {Peek().Value}", Peek().StartLine, errorCode);
+                    TranslatorView.HandleError(errorMessage + $" '{Peek().Value}' no es válido", Peek().StartLine, errorCode);
                 Advance();
                 return false;
             }
 
-            errorMsg = "Error de sintaxis: " + errorMessage;
+            errorMsg = errorMessage;
             if (errorCode != "")
                 TranslatorView.HandleError(errorMsg, Previous().StartLine, errorCode);
             Advance();
@@ -494,15 +536,13 @@ namespace Compilador_AAA.Traductor
                 }
             }
 
-            string errorMsg = "Error de sintaxis: " + errorMessage;
             int errorLine = IsAtEndOfLine() ? Previous().StartLine : Peek().StartLine;
 
             // Manejar el error
             if (errorCode != "")
-                TranslatorView.HandleError(errorMsg + $" pero se encontró: {Peek().Value}", errorLine, errorCode);
+                TranslatorView.HandleError(errorMessage + $" '{Peek().Value}' no es válido", errorLine, errorCode);
             Advance();
             return false;
         }
     }
 }
-
