@@ -42,8 +42,8 @@
                     <ColumnDefinition Width="150" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal" >
-                    <Image Source="\Resources\SVG\iconTraductor.png" Width="20" Margin="7,0" />  <!--no se muestra la imagen-->
-                    <Label Content="Traductor" FontSize="12" FontWeight="Bold" Opacity="0.4" Foreground="#F0589A" Margin="0,-3,0,0" />
+                    <Image Source="\Resources\SVG\iconTraductor.png" Width="20" Margin="7,0" />  
+                    <Label Content="Traductor" FontSize="12" FontWeight="Bold" Opacity="0.4" Foreground="#F0589A" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" 
                             x:Name="ControlBar"
@@ -55,7 +55,7 @@
                             Click="btnClose_Click"
                             VerticalAlignment="Center">
                         <Image Style="{StaticResource controlShutDownButtonIcon}"
-                               Source="\Resources\SVG\CerrarV.png" />              <!--no se muestra la imagen-->
+                               Source="\Resources\SVG\CerrarV.png" />             
                     </Button>
                     <Button x:Name="btnMaximize"
                             Style="{StaticResource controlButton}"
