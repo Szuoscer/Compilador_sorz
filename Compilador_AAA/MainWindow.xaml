@@ -30,7 +30,6 @@
                 <RowDefinition Height="25" />
                 <RowDefinition Height="18" />
                 <RowDefinition />
-                <RowDefinition Height="15"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0"
                   Name="WindowBar"
@@ -41,8 +40,8 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="150" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Horizontal" >
-                    <Image Source="\Resources\SVG\iconTraductor.png" Width="20" Margin="7,0" />  
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal">
                     <Label Content="Traductor" FontSize="12" FontWeight="Bold" Opacity="0.4" Foreground="#F0589A" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" 
@@ -106,9 +105,9 @@
                     </Menu>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Row="2" Name="ContentPanel" Margin="10,0"/>
-            <Grid Grid.Row="3"
-                  Background="#FFB6DB"></Grid>
+            <Grid Grid.Row="2"
+                  Name="ContentPanel"
+                  Margin="10,0" />
         </Grid>
     </Border>
    

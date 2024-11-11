@@ -67,18 +67,56 @@ namespace Compilador_AAA.Views
         private Point _startPoint;
         private void btnTraducir_Click(object sender, RoutedEventArgs e)
         {
-            if (ErrorList.Count == 0)
-            {
-                // Concatenar todos los elementos de la lista _print en un solo string
-                string concatenatedString = string.Join("\n", _print); // Usar "\n" como delimitador
-
-                // Mostrar el resultado en un MessageBox
-                MessageBox.Show(concatenatedString, "Resultados");
-
-            }
-            
+            TranslatedEditor.Text = "";
             BrushConverter bc = new BrushConverter();
             translatedheadercolor.Background = (Brush)bc.ConvertFrom("#FFD7EC");
+            if (RTErrorList)
+            {
+                if (OriginalEditor.Text != string.Empty)
+                {
+                    _print.Clear();
+                    ErrorList.Clear();
+                    TranslatedEditor.Text = string.Empty;
+
+                    try
+                    {
+                        // Tokenizar el texto original
+                        Lexer lexer = new Lexer(OriginalEditor.Document);
+                        var tokensTuple = lexer.Tokenize();
+                        // Parsear los tokens
+                        Parser parser = new Parser(tokensTuple);
+                        var program = parser.Parse(); // Asegúrate de que el método Parse() devuelva un objeto Program
+
+                        // Realizar análisis semántico
+                        var semanticAnalyzer = new SemanticAnalyzer();
+                        program.Accept(semanticAnalyzer);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                }
+            }
+            if (ErrorList.Count == 0)
+            {
+                if (_print.Count != 0)
+                {
+                    // Concatenar todos los elementos de la lista _print en un solo string
+                    string concatenatedString = string.Join("\n", _print); // Usar "\n" como delimitador
+
+                    // Mostrar el resultado en un MessageBox
+                    MessageBox.Show(concatenatedString, "Resultados");
+                }
+                
+                TranslatedEditor.Text = "SI Traduce";
+
+            }
+            else
+            {
+                TranslatedEditor.Text = "NO Traduce";
+            }
+            
+            
 
         }
 
@@ -145,56 +183,7 @@ namespace Compilador_AAA.Views
 
         private void OriginalEditor_TextChanged(object sender, EventArgs e)
         {
-            if (RTErrorList)
-            {
-                if (OriginalEditor.Text != string.Empty)
-                {
-                    _print.Clear();
-                    ErrorList.Clear();
-                    TranslatedEditor.Text = string.Empty;
-
-                    try
-                    {
-                        // Tokenizar el texto original
-                        Lexer lexer = new Lexer(OriginalEditor.Document);
-                        var tokensTuple = lexer.Tokenize();
-                        // Parsear los tokens
-                        Parser parser = new Parser(tokensTuple);
-                        var program = parser.Parse(); // Asegúrate de que el método Parse() devuelva un objeto Program
-
-                        // Realizar análisis semántico
-                        var semanticAnalyzer = new SemanticAnalyzer();
-                        program.Accept(semanticAnalyzer);
-
-                        // Generar la traducción
-                        for (int i = 1; i < tokensTuple.Keys.Count + 1; i++)
-                        {
-                            TranslatedEditor.Text += "block \n";
-
-                            for (int j = 0; j < tokensTuple.Where(kv => kv.Key == i)
-                                  .Select(kv => kv.Value.Count)
-                                  .FirstOrDefault(); j++)
-                            {
-                                if (tokensTuple.TryGetValue(i, out List<Token> valor))
-                                {
-                                    string temp = valor[j].ToString();
-                                    if (i != tokensTuple.Count - 1)
-                                        TranslatedEditor.Text += "\t'" + temp + "'" + ", \n";
-                                    else
-                                        TranslatedEditor.Text += "\t'" + temp + "'\n";
-                                }
-                            }
-                            TranslatedEditor.Text += "End \n\n";
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                }
-                BrushConverter bc = new BrushConverter();
-                translatedheadercolor.Background = (Brush)bc.ConvertFrom("#460721");
-            }
+            
         }
         private bool RTErrorList = true;
         private void btnDebug_Click(object sender, RoutedEventArgs e)
