@@ -190,7 +190,7 @@ namespace Compilador_AAA.Traductor
             while (true) // Permite múltiples condiciones de comparación
             {
                 Token token = AdvancePeek(); // Obtiene el siguiente token
-                if (token.Type == TokenType.Operator && (token.Value == "==" || token.Value == "!=" || token.Value == ">" || token.Value == "<"))
+                if (token.Type == TokenType.Operator && (token.Value == "==" || token.Value == "!=" || token.Value == ">" || token.Value == "<" || token.Value == ">=" || token.Value == "<="))
                 {
                     Advance(); // Consume el operador
                     Expr right = ParseAddExpr(); // Analiza la expresión a la derecha
