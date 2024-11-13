@@ -160,6 +160,27 @@ namespace Compilador_AAA.Traductor
             visitor.Visit(this);
         }
     }
+    public class ForStatement : Stmt
+    {
+        public Stmt Initialization { get; set; }
+        public Expr Condition { get; set; }
+        public Stmt Expresion { get; set; }
+        public List<Stmt> Body { get; set; }
+
+        public ForStatement(Stmt initialization, Expr condition, Stmt expresion, List<Stmt> body, int startLine)
+            : base(NodeType.IfStatement, startLine)
+        {
+            Initialization = initialization; 
+            Condition = condition;
+            Expresion = expresion;
+            Body = body;
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+    }
     public class WhileStatement : Stmt
     {
         public Expr Condition { get; set; }

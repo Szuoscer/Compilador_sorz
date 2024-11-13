@@ -391,6 +391,7 @@ namespace Compilador_AAA.Traductor
         }
         public void Visit(WhileStatement whileStatement)
         {
+
             bool? done = null;
             // Lógica para manejar el if statement
             if (whileStatement.Condition != null)
@@ -427,6 +428,64 @@ namespace Compilador_AAA.Traductor
                     else
                     {
                         TranslatorView.HandleError("Expresion invalida: " + temp, whileStatement.Condition.StartLine, "SEM016");
+                    }
+                }
+
+            }
+
+
+        }
+        public void Visit(ForStatement forStatement)
+        {
+
+            if(forStatement.Initialization != null)
+            {
+                forStatement.Initialization.Accept(this);
+            }
+            bool? done = null;
+            // Lógica para manejar el if statement
+            if (forStatement.Condition != null)
+            {
+                if (forStatement.Condition is ConditionExpr)
+                {
+
+                    done = Visit((ConditionExpr)forStatement.Condition);
+                    while (done != null && done == true)
+                    {
+                        foreach (var stmt in forStatement.Body)
+                        {
+                            stmt.Accept(this);
+                        }
+                        if(forStatement.Expresion != null)
+                        {
+                            forStatement.Expresion.Accept(this);
+                        }
+                        done = Visit((ConditionExpr)forStatement.Condition);
+                    }
+                }
+
+                else if (forStatement.Condition.Kind == NodeType.Identifier)
+                {
+                    var temp = EvaluateExpression(forStatement.Condition);
+                    if (temp is bool)
+                    {
+                        done = (bool)temp;
+                        while (done != null && done == true)
+                        {
+                            foreach (var stmt in forStatement.Body)
+                            {
+                                stmt.Accept(this);
+                            }
+                            if (forStatement.Expresion != null)
+                            {
+                                forStatement.Expresion.Accept(this);
+                            }
+                            done = Visit((ConditionExpr)forStatement.Condition);
+                        }
+                    }
+                    else
+                    {
+                        TranslatorView.HandleError("Expresion invalida: " + temp, forStatement.Condition.StartLine, "SEM016");
                     }
                 }
 

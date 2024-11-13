@@ -33,7 +33,7 @@ namespace Compilador_AAA.Traductor
 
             while (_currentLine < _tokensByLine.Count)
             {
-                var statement = ParseStatement();
+                var statement = ParseStatement(false);
                 if (statement != null)
                 {
                     program.children.Add(statement);
@@ -47,7 +47,7 @@ namespace Compilador_AAA.Traductor
             return program;
         }
 
-        private Stmt ParseStatement()
+        private Stmt ParseStatement(bool statement)
         {
             IsAtEndOfLine();
             if (Check(TokenType.Keyword, new[] { "class" }))
@@ -64,6 +64,10 @@ namespace Compilador_AAA.Traductor
             {
                 return ParseWhileStatement(); // Agregar aquí
             }
+            else if (Check(TokenType.Keyword, new[] { "para" }))
+            {
+                return ParseForStatement(); // Agregar aquí
+            }
             else if (Check(TokenType.Keyword, new[] { "si" }))
             {
                 return ParseIfStatement(); // Agregar aquí
@@ -74,7 +78,15 @@ namespace Compilador_AAA.Traductor
             }
             else if (Match(TokenType.Identifier))
             {
-                return ParseIdentifier();
+                if (statement)
+                {
+                    return ParseIdentifier(true);
+                }
+                else
+                {
+                    return ParseIdentifier();
+                }
+                
             }
             else
             {
@@ -113,6 +125,20 @@ namespace Compilador_AAA.Traductor
                 return new Identifier(identifier, Previous().StartLine, value);
             return null;
         }
+        private Identifier ParseIdentifier(bool semicolon)
+        {
+
+            string identifier = Previous().Value;
+            AssignmentExpr value = null;
+            if (Match(TokenType.Equals))
+            {
+                value = ParseAssignmentExpression(new Identifier(identifier, Previous().StartLine));
+            }
+
+            if (value != null)
+                return new Identifier(identifier, Previous().StartLine, value);
+            return null;
+        }
 
         private Expr ParseNumericLiteral()
         {
@@ -142,7 +168,7 @@ namespace Compilador_AAA.Traductor
             List<Stmt> children = new List<Stmt>();
             while (!Check(TokenType.CloseBrace) && !IsAtEndOfFile())
             {
-                var statement = ParseStatement();
+                var statement = ParseStatement(false);
                 if (statement != null)
                 {
                     children.Add(statement);
@@ -207,7 +233,7 @@ namespace Compilador_AAA.Traductor
             return left; // Si no hay operador, retorna la expresión izquierda
         }
         private WhileStatement ParseWhileStatement()
-        {
+        {   
             Consume(TokenType.Keyword, "Se esperaba 'while'", "SIN010");
             Consume(TokenType.OpenParen, "Se esperaba '(' después de 'while'", "SIN011");
 
@@ -219,7 +245,7 @@ namespace Compilador_AAA.Traductor
             List<Stmt> thenBranch = new List<Stmt>();
             while (!Check(TokenType.CloseBrace) && !IsAtEndOfFile())
             {
-                var statement = ParseStatement();
+                var statement = ParseStatement(false);
                 if (statement != null)
                 {
                     thenBranch.Add(statement);
@@ -235,6 +261,53 @@ namespace Compilador_AAA.Traductor
 
             return new WhileStatement(condition, thenBranch, _currentLine); // Retorna el if statement
         }
+        private ForStatement ParseForStatement()
+        {
+            Consume(TokenType.Keyword, "Se esperaba 'para'", "SIN021");
+            Consume(TokenType.OpenParen, "Se esperaba '(' después de 'para'", "SIN011");
+            int currentLineTemp = _currentLine; 
+            int currentTokenIndexTemp = _currentTokenIndex;
+            Stmt initialization = null;
+            if(!Check(TokenType.Semicolon) && !IsAtEndOfFile())
+            {
+                initialization=ParseStatement(false);
+            }
+
+            Expr condition = null;
+            if (!Check(TokenType.Semicolon) && !IsAtEndOfFile())
+            {
+                condition = ParseLogicOR(); // Analiza la condición
+            }
+            Consume(TokenType.Semicolon, "Se esperaba ';'", "SIN007");
+
+            Stmt expression = null;
+            if (!Check(TokenType.Semicolon) && !IsAtEndOfFile())
+            {
+                expression = ParseStatement(true); // Analiza la condición
+            }
+
+            Consume(TokenType.CloseParen, "Se esperaba ')' después de la condición", "SIN012");
+            Consume(TokenType.OpenBrace, "Se esperaba '{' después de la condición", "SIN013");
+
+            List<Stmt> body = new List<Stmt>();
+            while (!Check(TokenType.CloseBrace) && !IsAtEndOfFile())
+            {
+                var statement = ParseStatement(false);
+                if (statement != null)
+                {
+                    body.Add(statement);
+                }
+                else
+                {
+                    AdvanceToNextLine();
+                }
+            }
+
+            Consume(TokenType.CloseBrace, "Se esperaba '}' al final del bloque 'para'", "SIN014");
+
+
+            return new ForStatement(initialization,condition,expression, body, _currentLine); // Retorna el if statement
+        }
         private IfStatement ParseIfStatement()
         {
             Consume(TokenType.Keyword, "Se esperaba 'si'", "SIN010");
@@ -248,7 +321,7 @@ namespace Compilador_AAA.Traductor
             List<Stmt> thenBranch = new List<Stmt>();
             while (!Check(TokenType.CloseBrace) && !IsAtEndOfFile())
             {
-                var statement = ParseStatement();
+                var statement = ParseStatement(false);
                 if (statement != null)
                 {
                     thenBranch.Add(statement);
@@ -268,7 +341,7 @@ namespace Compilador_AAA.Traductor
                 Consume(TokenType.OpenBrace, "Se esperaba '{' después del sino", "SIN013");
                 while (!Check(TokenType.CloseBrace) && !IsAtEndOfFile())
                 {
-                    var statement = ParseStatement();
+                    var statement = ParseStatement(false);
                     if (statement != null)
                     {
                         elseBranch.Add(statement);

@@ -99,17 +99,15 @@ namespace Compilador_AAA.Views
             }
             if (ErrorList.Count == 0)
             {
+                TranslatedEditor.Text = "SI Traduce";
                 if (_print.Count != 0)
                 {
                     // Concatenar todos los elementos de la lista _print en un solo string
                     string concatenatedString = string.Join("\n", _print); // Usar "\n" como delimitador
 
                     // Mostrar el resultado en un MessageBox
-                    MessageBox.Show(concatenatedString, "Resultados");
+                    MessageBox.Show(concatenatedString, "Consola");
                 }
-                
-                TranslatedEditor.Text = "SI Traduce";
-
             }
             else
             {
